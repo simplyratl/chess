@@ -1,0 +1,31 @@
+:root {
+  --square-black: #CF8948;
+  --square-white: #FFCC9C;
+  --primary: #6800bd;
+  // --primary: #1d90f5;
+  --background: #272a37;
+  --secondary: #323644;
+  --primary-hover: #fb2576;
+  --highlight: red;
+  --side-heading: #9aa5b5;
+}
+
+.square-black {
+  background-color: var(--square-black);
+}
+
+.square-white {
+  background-color: var(--square-white);
+}
+
+.highlight {
+  background-color: var(--highlight);
+}
+
+.color-black {
+  color: var(--square-black);
+}
+
+.color-white {
+  color: var(--square-white);
+}

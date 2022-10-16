@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Default",
+    "image": "/images/board-styles/default.png",
+    "squares": {
+      "white": "#FFCC9C",
+      "black": "#CF8948"
+    }
+  },
+  {
+    "title": "Green",
+    "image": "/images/board-styles/green.png",
+    "squares": {
+      "white": "#EEEED2",
+      "black": "#769656"
+    }
+  },
+  {
+    "title": "Blue",
+    "image": "/images/board-styles/blue.png",
+    "squares": {
+      "white": "#EAEBEF",
+      "black": "#7A8394"
+    }
+  }
+]
