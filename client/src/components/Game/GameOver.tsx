@@ -18,7 +18,7 @@ const GameOver = ({ result }: Props) => {
         </div>
         <div className="flex gap-4">
           <Link
-            to='/login'
+            to='/'
             className="bg-amber-700 rounded-md text-lg font-bold text-white py-2 flex-1"
           >
             Back
