@@ -95,20 +95,20 @@ const AuthHome = () => {
         {showModal && (
           <motion.div className="absolute inset-0 w-full h-full bg-[rgba(0,0,0,0.6)] flex justify-center items-center">
             <motion.div
-              className="bg-white rounded-md w-[40%] h-[24%] p-[2%]"
+              className="bg-white rounded-md max-w-full h-auto px-12 py-4 mx-8 overflow-hidden"
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
             >
-              <h3 className="text-center text-[2vw] font-bold">
+              <h3 className="text-center text-4xl font-black font-heading">
                 Select the starting side.
               </h3>
 
-              <div className="flex gap-[1%] mt-[4%]">
+              <div className="flex gap-2.5 mt-6 md:flex-col">
                 {newGameOptions.map(({ label, value }) => (
                   <span
                     key={value}
-                    className="w-full text-center text-[1.4vw] bg-black text-white rounded-md p-[1.2%] cursor-pointer hover:bg-[#202020] transition-all duration-200"
+                    className="w-full text-center text-2xl bg-black text-white rounded-md cursor-pointer hover:bg-primary transition-all duration-200 whitespace-nowrap px-8 py-2"
                     onClick={() => {
                       if (playType === "online") {
                         startOnlineGame(value);

@@ -5,7 +5,8 @@
     "squares": {
       "white": "#FFCC9C",
       "black": "#CF8948"
-    }
+    },
+    "highlight": "red"
   },
   {
     "title": "Green",
@@ -13,7 +14,8 @@
     "squares": {
       "white": "#EEEED2",
       "black": "#769656"
-    }
+    },
+    "highlight": "#BACA2B"
   },
   {
     "title": "Blue",
@@ -21,6 +23,7 @@
     "squares": {
       "white": "#EAEBEF",
       "black": "#7A8394"
-    }
+    },
+    "highlight": "coral"
   }
 ]

@@ -1,9 +1,8 @@
 import { BehaviorSubject } from "rxjs";
 import { Chess } from "chess.js";
-import { PendingPromoProps, UpdateGameProps } from "./gameTypes";
-import { auth, db } from "../firebase";
-import { getAuth } from "firebase/auth";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { PendingPromoProps } from "./gameTypes";
+import { auth } from "../firebase";
+import { getDoc, updateDoc } from "firebase/firestore";
 import { fromRef } from "rxfire/firestore";
 import { map } from "rxjs/operators";
 import { getUsername } from "./utils";
@@ -155,8 +154,12 @@ export const updateGame = async (
       pendingPromotion: pendingPromotion || null,
     };
 
+    if (isGameOver) {
+      updatedData.status = "finished";
+    }
+
     if (reset) {
-      updatedData.status = "over";
+      updatedData.status = "rematch";
     }
 
     await updateDoc(gameRef, updatedData);
@@ -190,10 +193,12 @@ export const getMoves = (from: any) => {
   return legalMove;
 };
 
-const getGameResult = async () => {
+export const getGameResult = () => {
+  let returnString;
+
   if (chess.inCheck()) {
     const winner = chess.turn() === "w" ? "BLACK" : "WHITE";
-    return `CHECKMATE - WINNER - ${winner}`;
+    returnString = `CHECKMATE - WINNER - ${winner}`;
   } else if (chess.isDraw()) {
     let reason = "50 - MOVES - RULE";
     if (chess.isStalemate()) {
@@ -203,21 +208,10 @@ const getGameResult = async () => {
     } else if (chess.isInsufficientMaterial()) {
       reason = "INSUFFICIENT MATERIAL";
     }
-
-    if (gameRef) {
-      await updateDoc(gameRef, {
-        status: "finished",
-      });
-    }
-
-    return `DRAW - ${reason}`;
+    returnString = `DRAW - ${reason}`;
   } else {
-    if (gameRef) {
-      await updateDoc(gameRef, {
-        status: "finished",
-      });
-    }
-
-    return "UNKNOWN REASON";
+    returnString = "UNKNOWN REASON";
   }
+
+  return returnString;
 };
