@@ -20,14 +20,12 @@ const Game = () => {
   const [initResult, setInitResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [game, setGame] = useState<any>(null);
-  const sharebleLink = window.location.href;
+  const sharableLink = window.location.href;
   const [user] = useAuthState(auth);
   const [sideTurn, setSideTurn] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
-
   const navigate = useNavigate();
   const location = useLocation();
-
   const params = useParams();
 
   useEffect(() => {
@@ -76,16 +74,14 @@ const Game = () => {
     return () => subscribe && subscribe.unsubscribe();
   }, [params.id]);
 
-  console.log(result);
-
-  async function copyToClipboard() {
+   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(sharebleLink);
+      await navigator.clipboard.writeText(sharableLink);
       setCopiedLink(true);
       showNotification(setCopiedLink);
     } catch (e) {
       setCopiedLink(false);
-      console.log(e);
+      console.log(e, 'error');
     }
   }
 

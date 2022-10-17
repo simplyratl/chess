@@ -94,7 +94,7 @@ const GuestHome = () => {
 
       <AnimatePresence>
         {showModal && (
-          <motion.div className="absolute inset-0 w-full h-full bg-[rgba(0,0,0,0.6)] flex justify-center items-center">
+          <motion.div className="absolute inset-0 w-full h-full bg-[rgba(0,0,0,0.84)] flex justify-center items-center">
             <motion.div
               className="bg-white rounded-md w-[40%] h-[24%] p-[2%]"
               initial={{ opacity: 0, scale: 0 }}

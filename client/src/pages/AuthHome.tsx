@@ -93,7 +93,7 @@ const AuthHome = () => {
 
       <AnimatePresence>
         {showModal && (
-          <motion.div className="absolute inset-0 w-full h-full bg-[rgba(0,0,0,0.6)] flex justify-center items-center">
+          <motion.div className="absolute inset-0 w-full h-full bg-[rgba(0,0,0,0.84)] flex justify-center items-center">
             <motion.div
               className="bg-white rounded-md max-w-full h-auto px-12 py-4 mx-8 overflow-hidden"
               initial={{ opacity: 0, scale: 0 }}

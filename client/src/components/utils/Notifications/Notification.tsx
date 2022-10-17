@@ -42,7 +42,7 @@ const Notification = ({type, text}: Props) => {
 					transition={{ease: 'easeInOut', duration: 0.4}}
 				>
 					<div
-						className={`fixed bottom-12 right-12 max-w-80 px-8 py-4 rounded-xl shadow-lg text-white sm:right-0 sm:max-w-full sm:w-full`}
+						className={`fixed bottom-12 right-12 max-w-80 px-8 py-4 rounded-xl shadow-lg text-white sm:right-0 sm:max-w-full sm:w-full z-[9999]`}
 						style={{
 							border: `2px solid ${color}`,
 							backgroundColor: `${color}60`,

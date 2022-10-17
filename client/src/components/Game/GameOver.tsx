@@ -1,5 +1,6 @@
 import React from "react";
 import { resetGame } from "../../utils/game";
+import {Link} from "react-router-dom";
 
 interface Props {
   result: string;
@@ -16,12 +17,12 @@ const GameOver = ({ result }: Props) => {
           <p className="mb-12">{result}</p>
         </div>
         <div className="flex gap-4">
-          <button
-            onClick={resetGame}
+          <Link
+            to='/login'
             className="bg-amber-700 rounded-md text-lg font-bold text-white py-2 flex-1"
           >
             Back
-          </button>
+          </Link>
           <button
             onClick={resetGame}
             className="bg-primary rounded-md text-lg font-bold text-white py-2 flex-1 hover:bg-primary_hover"

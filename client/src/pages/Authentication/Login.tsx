@@ -8,10 +8,16 @@ import Loader from "../../components/utils/Loader/Loader";
 import Notification from "../../components/utils/Notifications/Notification";
 import {returnError} from "../../utils/utils";
 import {fireBaseErrorCatch} from "../../utils/errors";
+import ResetPassword from "../../components/Login/ResetPassword";
 
 interface UserDataProps {
 	email: string;
 	password: string;
+}
+
+interface ForgotPasswordProps{
+	modal:boolean;
+	email:string;
 }
 
 const Login = () => {
@@ -23,6 +29,10 @@ const Login = () => {
 	const [userData, setUserData] = useState<UserDataProps>({
 		email: "",
 		password: "",
+	});
+	const [forgotPassword, setForgotPassword] = useState<ForgotPasswordProps>({
+		modal: false,
+		email: ""
 	});
 
 	const handleSubmit = async (e: any): Promise<void> => {
@@ -130,9 +140,9 @@ const Login = () => {
 							</button>
 
 							<div className="flex gap-4 mt-4">
-								<Link to="/login" className="text-lg hover:text-primary_hover">
-									Login
-								</Link>
+								<button type="button" className="text-lg hover:text-primary_hover" onClick={() => setForgotPassword({...forgotPassword, modal: true})}>
+									Forgot password?
+								</button>
 								<Link
 									to="/register"
 									className="text-lg hover:text-primary_hover"
@@ -161,6 +171,8 @@ const Login = () => {
 					<Notification type="error" text={error}/>
 				)}
 			</AnimatePresence>
+
+			{forgotPassword.modal && <ResetPassword forgotPassword={forgotPassword} setForgotPassword={setForgotPassword} />}
 		</>
 	);
 };

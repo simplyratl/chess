@@ -41,7 +41,6 @@ const Register = () => {
     if (!username || !password || !confirm_password || !email) {
       setError(fireBaseErrorCatch("All inputs must be filled."));
       showNotification(setLoading, setError);
-
       return;
     }
 
