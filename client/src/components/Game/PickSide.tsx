@@ -34,6 +34,7 @@ const PickSide = ({ sideSelect, currentUser, playType, type }: Props) => {
       members: [member],
       gameId: `${Math.random().toString(36).substring(2, 9)}_${Date.now()}`,
       type: type,
+      sideTurn: "w",
     };
 
     await setDoc(doc(db, "games", game.gameId), game);

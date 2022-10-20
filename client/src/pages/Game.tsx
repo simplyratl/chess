@@ -34,13 +34,12 @@ const Game = () => {
   const [user] = useAuthState(auth);
   const [copiedLink, setCopiedLink] = useState(false);
   const [type, setType] = useState("");
+  const [status, setStatus] = useState("");
   const [sideTurn, setSideTurn] = useState("b");
   const { currentUser } = auth;
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
-
-  console.log(sideTurn);
 
   const minutes = 3;
   const plusSeconds = 0;
@@ -54,12 +53,7 @@ const Game = () => {
     plusSeconds,
   };
 
-  const [time, setTime] = useState<Timer>(
-    initialTimer(minutes, plusSeconds) ?? INITIAL
-  );
-
-  getTypeGame("3|1");
-
+  let conditionPosition = params.id ? sideTurn : position;
   const currUser = {
     seconds: "currentUserTimeSeconds",
     minutes: "currentUserTimeMinutes",
@@ -68,7 +62,13 @@ const Game = () => {
     seconds: "opponentTimeSeconds",
     minutes: "opponentTimeMinutes",
   };
-  const getUser: any = position === "w" ? currUser : opponent;
+  const getUser: any = conditionPosition === "w" ? currUser : opponent;
+
+  const [time, setTime] = useState<Timer>(
+    initialTimer(minutes, plusSeconds) ?? INITIAL
+  );
+
+  getTypeGame("3|1");
 
   const { dispatch, flipBoard } = useContext(GameContext);
 
@@ -122,6 +122,8 @@ const Game = () => {
           setResult(game.result);
           setPosition(game.position);
           setType(game.type);
+          setSideTurn(game.sideTurn);
+          setStatus(game.status);
           setGame(game);
         });
       }
@@ -147,7 +149,12 @@ const Game = () => {
 
   useEffect(() => {
     const timerUserPlaying = () => {
-      if (position === "w") {
+      if (status.length === 0 || status === "waiting") {
+        setTime({ ...time, currentUserPlaying: false, opponentPlaying: false });
+        return;
+      }
+
+      if (conditionPosition === "w") {
         setTime({ ...time, currentUserPlaying: true, opponentPlaying: false });
       } else {
         setTime({ ...time, opponentPlaying: true, currentUserPlaying: false });
@@ -155,7 +162,7 @@ const Game = () => {
     };
 
     timerUserPlaying();
-  }, [position]);
+  }, [conditionPosition, status]);
 
   const currentCalculateTime = () => {
     if (!time)
@@ -240,6 +247,11 @@ const Game = () => {
           {loading && <h3>Loading...</h3>}
 
           <div className="flex justify-between items-center mb-2">
+            <div className="bg-secondary_gray text-white px-6 py-2 rounded-2xl text-xl font-semibold">
+              {time && time.opponentTimeMinutes} :{" "}
+              {time && addZero(time.opponentTimeSeconds)}
+            </div>
+
             {game?.oponent && game?.oponent.name && (
               <>
                 <div className="flex gap-3 items-center mb-3">
@@ -254,11 +266,6 @@ const Game = () => {
                 </div>
               </>
             )}
-
-            <div className="bg-secondary_gray text-white px-6 py-2 rounded-2xl text-xl font-semibold">
-              {time && time.opponentTimeMinutes} :{" "}
-              {time && addZero(time.opponentTimeSeconds)}
-            </div>
 
             <div className="flex items-center gap-4">
               {!params.id && (
@@ -291,20 +298,21 @@ const Game = () => {
 
           <Board board={board} position={position} />
 
-          <div className="flex mt-2">
+          <div className="flex items-center mt-2 gap-4">
             {game?.member && game?.member.name && (
-              <div className="flex gap-3 items-center mt-3">
+              <div className="flex gap-3 items-center">
                 <img
                   src={game.member.image ?? ""}
                   alt="You"
-                  className="w-12 object-fit rounded-full"
+                  className="w-11 object-fit rounded-full"
                 />
-                <span className="inline-block max-w-[60%] text-center mt-2 text-xl bg-primary px-4 py-1 rounded-lg text-white">
+                <span className="inline-block max-w-[200px] text-center h-full text-xl bg-primary px-6 py-2 rounded-lg text-white">
                   {game.member.name}
                 </span>
               </div>
             )}
-            <div className="bg-secondary_gray text-white px-6 py-2 rounded-2xl text-xl font-semibold">
+
+            <div className="bg-secondary_gray text-white w-[120px] text-center px-6 py-2 rounded-2xl text-xl font-semibold">
               {time && time.currentUserTimeMinutes} :{" "}
               {time && addZero(time.currentUserTimeSeconds)}
             </div>

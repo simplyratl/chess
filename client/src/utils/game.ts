@@ -71,6 +71,7 @@ export const initGame = async (gameRefFb: any) => {
           position: member.piece,
           member,
           oponent,
+          sideTurn: "w",
           result: isGameOver ? getGameResult() : null,
           ...restOfGame,
         };
@@ -174,9 +175,17 @@ export const updateGame = async (
   }
 
   if (gameRef) {
+    const ref = await getDoc(gameRef);
+    let data: any;
+
+    if (ref.exists()) {
+      data = ref.data();
+    }
+
     const updatedData: any = {
       gameData: chess.fen(),
       pendingPromotion: pendingPromotion || null,
+      sideTurn: data.sideTurn === "w" ? "b" : "w",
     };
 
     if (isGameOver || resign) {
