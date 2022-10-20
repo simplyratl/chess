@@ -14,3 +14,12 @@ export type PendingPromoProps = {
   to: string;
   color: any;
 };
+
+export interface Timer {
+  currentUserTimeMinutes: number;
+  currentUserTimeSeconds: number;
+  opponentTimeMinutes: number;
+  opponentTimeSeconds: number;
+  currentUserPlaying: boolean;
+  opponentPlaying: boolean;
+}

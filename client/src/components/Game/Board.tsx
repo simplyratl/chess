@@ -1,31 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getMoves } from "../../utils/game";
 import { PieceProps } from "../../utils/gameTypes";
 import BoardSquare from "./BoardSquare";
+import { GameContext } from "../../context/game/GameContext";
 
 interface Props {
   board: any;
   position: any;
-  sideTurn: boolean;
 }
 
-const Board = ({ board, position, sideTurn }: Props) => {
+const Board = ({ board, position }: Props) => {
   const [currBoard, setCurrBoard] = useState([]);
   const [moves, setMoves] = useState<any[]>([]);
   const [selectedFigure, setSelectedFigure] = useState("");
 
-  useEffect(() => {
-    // if (!sideTurn) return setCurrBoard(board.flat());
+  const { flipBoard } = useContext(GameContext);
 
-    setCurrBoard(position === "w" ? board.flat() : board.flat().reverse());
+  useEffect(() => {
+    if (flipBoard) {
+      setCurrBoard(position === "w" ? board.flat() : board.flat().reverse());
+    } else {
+      setCurrBoard(board.flat());
+    }
+
     setSelectedFigure("");
     setMoves([]);
-  }, [board, position]);
+  }, [board, position, flipBoard]);
 
   const getXYPosition = (i: number) => {
-    const x = position === "w" ? i % 8 : Math.abs((i % 8) - 7);
-    const y =
-      position === "w" ? Math.abs(Math.floor(i / 8) - 7) : Math.floor(i / 8);
+    let x = i % 8;
+    let y = Math.abs(Math.floor(i / 8) - 7);
+
+    if (flipBoard) {
+      x = position === "w" ? i % 8 : Math.abs((i % 8) - 7);
+      y =
+        position === "w" ? Math.abs(Math.floor(i / 8) - 7) : Math.floor(i / 8);
+    }
+
     return { x, y };
   };
 

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { GameContext } from "../../context/game/GameContext";
 
 interface Props {
   children: JSX.Element[] | JSX.Element;
@@ -23,6 +24,8 @@ const Square = ({
   const leftIndicatorWhite = 8 - index / 8;
   const leftIndicatorBlack = index / 8 + 1;
 
+  const { flipBoard } = useContext(GameContext);
+
   useEffect(() => {
     if (position === selectedFigure) {
       setBackground("highlight");
@@ -31,11 +34,17 @@ const Square = ({
     }
   }, [selectedFigure]);
 
-  const letter = ["a", "b", "c", "d", "e", "f", "g", "h"][
-    player === "w" ? index - 56 : Math.abs(index - 63)
-  ];
+  const lettersPosition = () => {
+    if (!flipBoard) return index - 56;
 
-  const bottomIndicator = letter;
+    if (player === "w") {
+      return index - 56;
+    } else {
+      return Math.abs(index - 63);
+    }
+  };
+
+  const letter = ["a", "b", "c", "d", "e", "f", "g", "h"][lettersPosition()];
 
   return (
     <div className={`relative w-full h-full ${background}`}>
@@ -50,7 +59,7 @@ const Square = ({
         className={`absolute bottom-0 right-0 p-2 text-[1vw] ${textColor} pointer-events-none`}
         style={{ opacity: index >= 56 ? 1 : 0 }}
       >
-        {bottomIndicator}
+        {letter}
       </span>
     </div>
   );

@@ -1,19 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { auth, db } from "../firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { getUsername, guestCheck } from "../utils/utils";
+import { guestCheck } from "../utils/utils";
 import Notification from "../components/utils/Notifications/Notification";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
+import TypeGame from "../components/Game/TypeGame";
+import PickSide from "../components/Game/PickSide";
 
 const AuthHome = () => {
   const navigate = useNavigate();
   const [user] = useAuthState(auth);
 
   const { currentUser } = auth;
-  const [showModal, setShowModal] = useState(false);
+  const [pickSide, setPickSide] = useState(false);
+  const [gameType, setGameType] = useState(false);
   const [playType, setPlayType] = useState<string>("");
+  const [amountPlayers, setAmountPlayers] = useState(0);
+
+  const [title, setTitle] = useState("");
+  const [minutes, setMinutes] = useState(0);
+  const [plusSeconds, setPlusSeconds] = useState(0);
 
   useEffect(() => {
     if (guestCheck()) {
@@ -21,7 +28,7 @@ const AuthHome = () => {
     }
   }, []);
 
-  const newGameOptions = [
+  const sideSelect = [
     { label: "Black Pieces", value: "b" },
     { label: "White Pieces", value: "w" },
     { label: "Random", value: "r" },
@@ -29,39 +36,12 @@ const AuthHome = () => {
 
   const handlePlayOnline = () => {
     setPlayType("online");
-    setShowModal(true);
+    setGameType(true);
   };
 
   const handlePlayOffline = () => {
     setPlayType("offline");
-    setShowModal(true);
-  };
-
-  const startOnlineGame = async (startingPiece: string): Promise<void> => {
-    if (!currentUser?.uid) return alert("Error while making a user.");
-
-    const member = {
-      uid: currentUser.uid,
-      piece:
-        startingPiece === "r"
-          ? ["b", "w"][Math.round(Math.random())]
-          : startingPiece,
-      name: getUsername(),
-      creator: true,
-    };
-
-    const game = {
-      status: "waiting",
-      members: [member],
-      gameId: `${Math.random().toString(36).substring(2, 9)}_${Date.now()}`,
-    };
-
-    await setDoc(doc(db, "games", game.gameId), game);
-    navigate(`/game/${game.gameId}`);
-  };
-
-  const startOfflineGame = () => {
-    navigate("/game/offline");
+    setGameType(true);
   };
 
   useEffect(() => {
@@ -70,59 +50,61 @@ const AuthHome = () => {
 
   return (
     <>
-      <div className="h-[100vh]">
-        <div className="flex">
-          <div
-            className="flex justify-center items-center flex-1 h-[100vh] bg-black text-white text-[2.6vw] font-semibold overflow-hidden cursor-pointer group"
-            onClick={handlePlayOffline}
-          >
-            <p className="group-hover:scale-110 transition-transform duration-200">
-              Play Locally
+      <section className="h-[100vh] md:h-full mx-auto max-w-[1640px] px-12">
+        <div className="relative flex justify-between items-center lg:flex-col h-full gap-36">
+          <div className="flex-1 lg:absolute lg:top-[500px]">
+            <h1 className="text-white text-9xl font-black font-heading xl:text-8xl md:justify-center">
+              Play online chess
+            </h1>
+            <p className="text-white text-2xl xl:text-xl">
+              8 players playing now.
             </p>
+            <div className="flex flex-col w-80 xl:w-full">
+              <button
+                type="button"
+                className="bg-primary text-white w-full py-3 text-2xl rounded-lg mt-8 font-bold hover:bg-primary_hover transition-colors duration-100 xl:text-xl"
+                onClick={handlePlayOnline}
+              >
+                PLAY ONLINE
+              </button>
+              <button
+                type="button"
+                className="bg-secondary_gray text-white w-full py-3 text-2xl rounded-lg mt-2 font-bold hover:bg-primary_hover transition-colors duration-100 xl:text-xl"
+                onClick={handlePlayOffline}
+              >
+                PLAY LOCALLY
+              </button>
+            </div>
           </div>
-          <div
-            className="flex justify-center items-center flex-1 h-[100vh] bg-red-600 text-[2.6vw] font-semibold overflow-hidden cursor-pointer group"
-            onClick={handlePlayOnline}
-          >
-            <p className="group-hover:scale-110 transition-transform duration-200">
-              Play Online
-            </p>
+
+          <div className="w-[1000px] xl:w-[700px] select-none flex-2">
+            <img
+              src={require("../assets/images/svgs/hero_animation.svg").default}
+              alt="Hero"
+              className="w-full h-full pointer-events-none"
+            />
           </div>
         </div>
-      </div>
+      </section>
 
       <AnimatePresence>
-        {showModal && (
-          <motion.div className="absolute inset-0 w-full h-full bg-[rgba(0,0,0,0.84)] flex justify-center items-center">
-            <motion.div
-              className="bg-white rounded-md max-w-full h-auto px-12 py-4 mx-8 overflow-hidden"
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0 }}
-            >
-              <h3 className="text-center text-4xl font-black font-heading">
-                Select the starting side.
-              </h3>
+        {gameType && (
+          <TypeGame
+            setPickSide={setPickSide}
+            setGameType={setGameType}
+            setMinutes={setMinutes}
+            setTitle={setTitle}
+            setPlusSeconds={setPlusSeconds}
+          />
+        )}
 
-              <div className="flex gap-2.5 mt-6 md:flex-col">
-                {newGameOptions.map(({ label, value }) => (
-                  <span
-                    key={value}
-                    className="w-full text-center text-2xl bg-black text-white rounded-md cursor-pointer hover:bg-primary transition-all duration-200 whitespace-nowrap px-8 py-2"
-                    onClick={() => {
-                      if (playType === "online") {
-                        startOnlineGame(value);
-                      } else {
-                        startOfflineGame();
-                      }
-                    }}
-                  >
-                    {label}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-          </motion.div>
+        {pickSide && (
+          <PickSide
+            sideSelect={sideSelect}
+            currentUser={currentUser}
+            playType={playType}
+            type={title}
+          />
         )}
       </AnimatePresence>
 

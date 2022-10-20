@@ -10,6 +10,7 @@ import Loader from "./components/utils/Loader/Loader";
 import Login from "./pages/Authentication/Login";
 import Register from "./pages/Authentication/Register";
 import AuthHome from "./pages/AuthHome";
+import Settings from "./pages/Settings";
 
 function App() {
   const [user, loading, error] = useAuthState(auth);
@@ -25,7 +26,7 @@ function App() {
   }
 
   return (
-    <main className="min-h-[100vh] overflow-x-hidden">
+    <main className="overflow-x-hidden">
       <Router>
         <Navbar />
         <Routes>
@@ -36,6 +37,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/game/:id" element={<Game />} />
           <Route path="/game/offline" element={<Game />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </Router>
     </main>

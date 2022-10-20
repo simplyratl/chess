@@ -1,6 +1,5 @@
 import { signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase";
 import { IoMdSettings } from "react-icons/io";
 import { Link, useLocation } from "react-router-dom";
@@ -9,16 +8,16 @@ import { changeBoardColor } from "../utils/utils";
 import { AnimatePresence, motion } from "framer-motion";
 
 const Navbar = () => {
-  const [user] = useAuthState(auth);
   const [showSettings, setShowSettings] = useState(false);
   const location = useLocation();
+  const currentUser = localStorage.getItem("user");
 
   useEffect(() => {
     setShowSettings(false);
-  }, [location]);
+  }, [location, currentUser]);
 
   const handleSignOut = (e: any) => {
-    if (user) {
+    if (currentUser) {
       e.preventDefault();
       localStorage.removeItem("user");
       localStorage.removeItem("guest");
@@ -27,7 +26,7 @@ const Navbar = () => {
   };
 
   const handleSettings = (e: any) => {
-    if (!user) return;
+    if (!currentUser) return;
 
     e.preventDefault();
     setShowSettings(!showSettings);
@@ -35,11 +34,10 @@ const Navbar = () => {
 
   useEffect(() => {
     if (localStorage.getItem("board-style")) {
-      // @ts-ignore
-      const style = JSON.parse(localStorage.getItem("board-style")) ?? {
+      const style = JSON.parse(localStorage.getItem("board-style") ?? "{}") ?? {
         white: "#FFCC9C",
         black: "#CF8948",
-        highlight: "red",
+        highlight: "#b16a25",
       };
       changeBoardColor(style.white, style.black, style.highlight);
     }
@@ -47,12 +45,18 @@ const Navbar = () => {
 
   const selectBoardStyle = (style: any, highlight: string) => {
     changeBoardColor(style.white, style.black, highlight);
-    localStorage.setItem("board-style", JSON.stringify(style));
+    const styles = {
+      black: style.black,
+      white: style.white,
+      highlight: highlight,
+    };
+
+    localStorage.setItem("board-style", JSON.stringify(styles));
   };
 
   return (
-    <div className="absolute top-0 left-0 w-full z-50">
-      <div className="flex justify-between items-center px-8 py-6 sm:px-4">
+    <div className="absolute top-0 left-0 w-full z-20">
+      <div className="flex justify-between items-center px-8 py-4 sm:px-4">
         <div className="flex items-center">
           <Link to="/" className="w-16 sm:w-10 hover:scale-105">
             <img
@@ -71,7 +75,7 @@ const Navbar = () => {
 
         <ul className="text-white flex items-center gap-6 sm:gap-3">
           <li className="text-xl sm:text-sm font-medium hover:text-primary_hover transition-colors">
-            {!user && (
+            {!currentUser && (
               <Link to="/login">
                 <span className="cursor-pointer">Login</span>
               </Link>
@@ -86,11 +90,11 @@ const Navbar = () => {
               <button
                 type="submit"
                 className={`${
-                  !user &&
+                  !currentUser &&
                   "bg-primary w-32 h-12 sm:w-max-w-18 sm:w-full sm:h-full sm:px-4 sm:py-1 rounded-md "
                 }shadow-md hover:scale-105 transition-transform`}
               >
-                {user ? (
+                {currentUser ? (
                   <IoMdSettings
                     size={32}
                     onClick={() => setShowSettings(!showSettings)}
@@ -113,11 +117,11 @@ const Navbar = () => {
               transition={{ ease: "easeInOut", duration: 0.2 }}
             >
               <ul className="text-white">
-                <a href="#">
+                <Link to="/settings">
                   <li className="text-lg hover:bg-primary_hover transition-colors rounded-md p-2">
                     Settings
                   </li>
-                </a>
+                </Link>
                 <li>
                   <div className="p-2">
                     <p className="text-lg mb-2">Board style</p>

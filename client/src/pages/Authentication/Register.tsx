@@ -61,6 +61,8 @@ const Register = () => {
 
         await updateProfile(currentUser, {
           displayName: username,
+          photoURL:
+            "https://firebasestorage.googleapis.com/v0/b/chess-app-org.appspot.com/o/images%2Fdefault_profile.png?alt=media&token=54266ec9-a251-45f6-b497-2e8981b44686",
         }).catch((err) => console.log(err));
 
         setRegistered(true);

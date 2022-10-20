@@ -5,7 +5,7 @@ import { auth } from "../firebase";
 import { getDoc, updateDoc } from "firebase/firestore";
 import { fromRef } from "rxfire/firestore";
 import { map } from "rxjs/operators";
-import { getUsername } from "./utils";
+import { getUsername, initialTimer } from "./utils";
 
 let gameRef: any;
 let member: any;
@@ -32,6 +32,7 @@ export const initGame = async (gameRefFb: any) => {
       const currUser = {
         uid: currentUser?.uid,
         name: getUsername(),
+        image: currentUser?.photoURL ?? "",
         piece: creator.piece === "w" ? "b" : "w",
       };
       const updatedMembers = [...initialGame.members, currUser];
@@ -142,11 +143,35 @@ export const move = (from: any, to: any, promotion: any) => {
   }
 };
 
+export const resign = () => {
+  updateGame(null, null, null, true);
+};
+
+export const timeEnd = () => {
+  updateGame(null, null, true);
+};
+
 export const updateGame = async (
-  pendingPromotion: PendingPromoProps | null,
-  reset: any
+  pendingPromotion?: PendingPromoProps | null,
+  reset?: boolean | null,
+  timer?: boolean | null,
+  resign?: boolean
 ) => {
-  const isGameOver = chess.isGameOver();
+  let isGameOver;
+  let gameOverType;
+
+  if (timer) {
+    isGameOver = true;
+    gameOverType = "timer";
+  }
+  if (resign) {
+    isGameOver = true;
+    gameOverType = "resign";
+  }
+  if (!timer && !resign) {
+    isGameOver = chess.isGameOver();
+    gameOverType = "end";
+  }
 
   if (gameRef) {
     const updatedData: any = {
@@ -154,7 +179,7 @@ export const updateGame = async (
       pendingPromotion: pendingPromotion || null,
     };
 
-    if (isGameOver) {
+    if (isGameOver || resign) {
       updatedData.status = "finished";
     }
 
@@ -169,7 +194,7 @@ export const updateGame = async (
       pendingPromotion,
       isGameOver,
       position: chess.turn(),
-      result: isGameOver ? getGameResult() : null,
+      result: isGameOver ? getGameResult(gameOverType) : null,
     };
 
     sessionStorage.setItem("savedGame", chess.fen());
@@ -177,11 +202,13 @@ export const updateGame = async (
   }
 };
 
-export const resetGame = async () => {
+export const resetGame = async (setTimer: any) => {
   if (gameRef) {
+    setTimer(initialTimer(10, 0));
     await updateGame(null, true);
     chess.reset();
   } else {
+    setTimer(initialTimer(10, 0));
     chess.reset();
     updateGame(null, null);
   }
@@ -193,11 +220,14 @@ export const getMoves = (from: any) => {
   return legalMove;
 };
 
-export const getGameResult = () => {
+export const getGameResult = (gameOverType?: string) => {
   let returnString;
+  const winner = chess.turn() === "w" ? "BLACK" : "WHITE";
+  const winnerTime = chess.turn() === "w" ? "WHITE" : "BLACK";
+  if (gameOverType === "resign") return `RESIGNED - WINNER ${winner}`;
+  if (gameOverType === "timer") return `TIME - WINNER ${winner}`;
 
   if (chess.inCheck()) {
-    const winner = chess.turn() === "w" ? "BLACK" : "WHITE";
     returnString = `CHECKMATE - WINNER - ${winner}`;
   } else if (chess.isDraw()) {
     let reason = "50 - MOVES - RULE";
@@ -214,4 +244,8 @@ export const getGameResult = () => {
   }
 
   return returnString;
+};
+
+export const getHistory = () => {
+  return chess.history({ verbose: true });
 };

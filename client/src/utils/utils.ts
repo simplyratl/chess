@@ -50,3 +50,38 @@ export const changeBoardColor = (
   document.body.style.setProperty("--square-black", black);
   document.body.style.setProperty("--highlight", highlight);
 };
+
+export const initialTimer = (minutes: number, plusSeconds: number) => {
+  if (!minutes || !plusSeconds) return;
+
+  return {
+    currentUserTimeMinutes: minutes,
+    currentUserTimeSeconds: 0,
+    opponentTimeMinutes: minutes,
+    opponentTimeSeconds: 0,
+    currentUserPlaying: true,
+    opponentPlaying: false,
+    plusSeconds,
+  };
+};
+
+export const getTypeGame = (type: string) => {
+  let typeFiltered;
+
+  if (type.includes("|")) {
+    typeFiltered = type.split("|");
+  } else {
+    typeFiltered = type.split(" ");
+  }
+
+  const minutes = parseInt(typeFiltered[0]);
+  let plusTime;
+
+  if (typeFiltered[1] === "num") {
+    plusTime = 0;
+  } else {
+    plusTime = parseInt(typeFiltered[1]);
+  }
+
+  return initialTimer(minutes, plusTime);
+};
